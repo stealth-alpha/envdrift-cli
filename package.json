@@ -1,0 +1,51 @@
+{
+  "name": "envdrift-cli",
+  "version": "0.1.0",
+  "description": "Compare .env.example against live .env files across machines and directories — flags missing, extra, and secret-looking vars. Ships a CI gate mode.",
+  "type": "module",
+  "bin": {
+    "envdrift": "./bin/envdrift.js"
+  },
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./cli": "./src/cli.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test",
+    "start": "node bin/envdrift.js"
+  },
+  "keywords": [
+    "dotenv",
+    "env",
+    "environment",
+    "env-example",
+    "config",
+    "drift",
+    "ci",
+    "secrets",
+    "lint",
+    "cli"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "EnvDrift Contributors"
+  },
+  "homepage": "https://stealth-alpha.github.io/envdrift-cli/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stealth-alpha/envdrift-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stealth-alpha/envdrift-cli/issues"
+  }
+}

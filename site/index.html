@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>envdrift — your .env.example is a contract. Enforce it.</title>
+<meta name="description" content="envdrift compares .env.example against live .env files across machines and directories — flags missing, extra, and secret-looking vars. CI gate mode included.">
+<style>
+:root{--bg:#0b0f17;--bg2:#111827;--panel:#0f172a;--border:#1f2937;--text:#e5e7eb;--muted:#94a3b8;--accent:#34d399;--accent2:#0ea5e9;--ok:#34d399;--bad:#f87171}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:28px;padding:16px 0;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;color:var(--text)}
+.brand .dot{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.links{display:flex;gap:16px;margin-left:auto;align-items:center}
+.links a{color:var(--muted);font-weight:500;font-size:15px}
+.links a:hover{color:var(--text);text-decoration:none}
+.btn{display:inline-block;border-radius:10px;padding:10px 18px;font-weight:600;font-size:15px;border:1px solid transparent}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04121f}
+.btn.ghost{border-color:var(--border);color:var(--text)}
+.btn.small{padding:7px 14px;font-size:13.5px}
+section{padding:72px 0}
+.hero{text-align:center;padding:88px 0 64px}
+.eyebrow{display:inline-block;padding:6px 14px;border-radius:999px;background:var(--bg2);border:1px solid var(--border);color:var(--muted);font-size:13px;font-weight:600;margin-bottom:22px}
+.hero h1{font-size:clamp(2.4rem,5vw,4rem);letter-spacing:-.035em;line-height:1.05;margin:.4rem auto 20px;max-width:820px}
+.hero h1 .grad{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);font-size:clamp(1.05rem,2.2vw,1.3rem);max-width:660px;margin:0 auto 32px}
+.ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.term{max-width:720px;margin:44px auto 0;text-align:left;background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.term .bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg2)}
+.term .bar .c{width:12px;height:12px;border-radius:50%}
+.term .bar .c.r{background:#ef4444}.term .bar .c.y{background:#f59e0b}.term .bar .c.g{background:#10b981}
+.term .bar .t{margin-left:12px;color:var(--muted);font-size:13px}
+.term pre{margin:0;padding:18px 22px;color:#cbd5e1;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;line-height:1.7;overflow-x:auto}
+.term .p{color:#64748b}.term .g{color:var(--ok)}.term .r{color:var(--bad)}.term .y{color:#fbbf24}.term .dim{color:#64748b}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px}
+.card h3{margin:0 0 8px;font-size:18px}
+.card p{margin:0;color:var(--muted);font-size:15px}
+.card .ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);font-size:20px;margin-bottom:14px}
+.section-head{text-align:center;margin-bottom:44px}
+.section-head h2{font-size:clamp(1.8rem,3.4vw,2.6rem);letter-spacing:-.02em;margin:0 0 10px}
+.section-head p{color:var(--muted);max-width:620px;margin:0 auto}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;counter-reset:step}
+.step{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;position:relative}
+.step::before{counter-increment:step;content:counter(step);position:absolute;top:20px;right:22px;font-size:32px;font-weight:800;color:color-mix(in srgb,var(--accent) 60%,transparent)}
+.step .code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--accent);font-size:14px}
+.pricing{max-width:460px;margin:0 auto}
+.tier{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px}
+.tier.featured{border-color:var(--accent)}
+.tier .name{font-weight:700;font-size:17px}
+.tier .price{font-size:38px;font-weight:800;letter-spacing:-.03em;margin:14px 0}
+.tier .price .per{font-size:15px;color:var(--muted);font-weight:500}
+.tier ul{list-style:none;margin:0 0 22px;padding:0;display:grid;gap:10px}
+.tier li{color:var(--muted);font-size:14.5px;display:flex;gap:10px}
+.tier li::before{content:"✓";color:var(--ok);font-weight:700}
+footer{border-top:1px solid var(--border);padding:40px 0;color:var(--muted);font-size:14px;text-align:center}
+.kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+@media(max-width:640px){.links a.hide{display:none}}
+</style>
+</head>
+<body>
+<header class="nav wrap">
+  <a class="brand" href="#"><span class="dot"></span>envdrift</a>
+  <nav class="links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a class="hide" href="#pricing">Pro</a>
+    <a class="btn primary small" href="https://github.com/stealth-alpha/envdrift-cli">GitHub</a>
+  </nav>
+</header>
+
+<section class="hero wrap">
+  <span class="eyebrow">zero dependencies · node 18+ · MIT</span>
+  <h1>Your <span class="kbd">.env.example</span> is a contract.<br><span class="grad">Enforce it.</span></h1>
+  <p>envdrift compares <code>.env.example</code> against live <code>.env</code> files across machines and directories — flags missing, extra, and secret-looking vars. CI gate mode included.</p>
+  <div class="ctas">
+    <a class="btn primary" href="https://www.npmjs.com/package/envdrift-cli">Install from npm</a>
+    <a class="btn ghost" href="https://github.com/stealth-alpha/envdrift-cli">View source</a>
+  </div>
+  <div class="term">
+    <div class="bar"><span class="c r"></span><span class="c y"></span><span class="c g"></span><span class="t">terminal</span></div>
+<pre><span class="p">$</span> envdrift check
+
+<span class="r">✗ drifted</span>  .
+  missing (in .env.example, not in .env):
+    - FEATURE_FLAGS
+    - LOG_LEVEL
+  extra (in .env, not documented):
+    + STRIPE_SECRET_KEY <span class="r">[secret-like]</span>
+  → 2 missing vars, 1 extra var, 1 secret-like var present
+
+<span class="p">$</span> envdrift scan --dir ~/code --ci   <span class="dim"># exit 1 on drift</span></pre>
+  </div>
+</section>
+
+<section id="features" class="wrap">
+  <div class="section-head">
+    <h2>Why envdrift</h2>
+    <p>Deploys fail at 2am because prod never got a variable someone added on their laptop three months ago. Hand-diffing env files doesn't scale. Machines checking them does.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="ico">🔍</div><h3>Missing vars</h3><p>Every var documented in <code>.env.example</code> but absent from the live <code>.env</code> — the exact set that breaks deploys.</p></div>
+    <div class="card"><div class="ico">🧟</div><h3>Extra vars</h3><p>Undocumented variables living only on one machine. The zombie config nobody remembers adding.</p></div>
+    <div class="card"><div class="ico">🔐</div><h3>Secret-looking flags</h3><p>Heuristics flag undocumented vars shaped like keys, tokens, PEM blocks, and connection strings with embedded credentials. Names only — values are never printed.</p></div>
+    <div class="card"><div class="ico">🌲</div><h3>Whole-machine scans</h3><p><code>envdrift scan</code> walks a directory tree and audits every project it finds — monorepos, server checkouts, your laptop.</p></div>
+    <div class="card"><div class="ico">🚦</div><h3>CI gate mode</h3><p><code>--ci</code> exits non-zero on drift or incomplete pairs. Wire it into your pipeline in one line.</p></div>
+    <div class="card"><div class="ico">📦</div><h3>Zero dependencies</h3><p>One Node 18+ binary. Nothing installed alongside it, nothing to audit, nothing to break.</p></div>
+  </div>
+</section>
+
+<section id="how" class="wrap">
+  <div class="section-head"><h2>How it works</h2><p>Thirty seconds, start to gate.</p></div>
+  <div class="steps">
+    <div class="step"><h3>Install</h3><p class="code">npm i -g envdrift-cli</p><p>or run ad-hoc with <span class="code">npx envdrift-cli</span>.</p></div>
+    <div class="step"><h3>Check</h3><p class="code">envdrift check</p><p>Compare one project's env pair. JSON output with <span class="code">--format json</span>.</p></div>
+    <div class="step"><h3>Scan</h3><p class="code">envdrift scan --dir ~/code</p><p>Audit every project under a tree at once.</p></div>
+    <div class="step"><h3>Gate</h3><p class="code">envdrift scan --ci</p><p>Non-zero exit on drift. Your pipeline decides what happens next.</p></div>
+  </div>
+</section>
+
+<section id="pricing" class="wrap">
+  <div class="section-head"><h2>Pricing</h2><p>The CLI is free and stays free. Pro adds the team layer.</p></div>
+  <div class="pricing">
+    <div class="tier featured">
+      <div class="name">EnvDrift Pro</div>
+      <div class="price">$9<span class="per">/month</span></div>
+      <ul>
+        <li>Hosted drift dashboard across machines and servers</li>
+        <li>Scheduled audits with Slack/email alerts</li>
+        <li>Org-wide secret-name allowlists</li>
+        <li>Historical drift reports</li>
+        <li>Priority support</li>
+      </ul>
+      <a class="btn primary" href="#">Get Pro — via Gumroad</a>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <p>envdrift — MIT licensed. Never prints your values. <a href="https://github.com/stealth-alpha/envdrift-cli">Source on GitHub</a>.</p>
+</footer>
+</body>
+</html>
