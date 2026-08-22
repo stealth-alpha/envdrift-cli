@@ -212,6 +212,19 @@ function failGate(problems, jsonMeta) {
 
 export async function main(argv) {
   const { flags, positional } = parseArgs(argv);
+
+  // Global flag spellings win over the default command: parseArgs routes
+  // every --flag into `flags`, so "--version" would otherwise fall through
+  // to the help default and print usage where the version belongs.
+  if (flags.version) {
+    printVersion();
+    return;
+  }
+  if (flags.help) {
+    printHelp();
+    return;
+  }
+
   const command = positional[0] || "help";
   try {
     switch (command) {

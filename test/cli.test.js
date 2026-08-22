@@ -102,3 +102,26 @@ test("CLI scan gates across a tree", () => {
     removeDir(root);
   }
 });
+
+test("--version prints the version, not usage", () => {
+  const dir = makeTempDir("ed-ver-");
+  try {
+    const out = runCli(["--version"], dir);
+    assert.match(out.trim(), /^\d+\.\d+\.\d+$/);
+    assert.doesNotMatch(out, /Usage/);
+  } finally {
+    removeDir(dir);
+  }
+});
+
+test("--help prints usage without running a check", () => {
+  const dir = makeTempDir("ed-help-");
+  try {
+    const out = runCli(["--help"], dir);
+    assert.match(out, /Usage/);
+    // report-only markers must be absent (help text legitimately says "drift")
+    assert.doesNotMatch(out, /missing var|extra var|✗|✓/);
+  } finally {
+    removeDir(dir);
+  }
+});
