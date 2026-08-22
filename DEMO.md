@@ -5,7 +5,7 @@ Run against this repository (the fixture in `demo/app` is deliberately drifted):
 ```console
 $ npx envdrift-cli check --dir demo/app
 
-✗ drifted  demo/app
+✗ drifted  .
   missing (in .env.example, not in .env):
     - FEATURE_FLAGS
     - LOG_LEVEL
@@ -16,6 +16,25 @@ $ npx envdrift-cli check --dir demo/app
 envdrift: 1 project drifted — 2 missing vars, 1 extra var, 1 secret-like
 $ echo $?
 0
+```
+
+(Single-project `check` labels its target `.`; paths appear in `scan` output.)
+
+`scan` walks a tree and labels each project with its path — here the repo root
+finds exactly the drifted fixture:
+
+```console
+$ npx envdrift-cli scan --dir .
+
+✗ drifted  demo/app
+  missing (in .env.example, not in .env):
+    - FEATURE_FLAGS
+    - LOG_LEVEL
+  extra (in .env, not documented):
+    + STRIPE_SECRET_KEY [secret-like]
+  → 2 missing vars, 1 extra var, 1 secret-like var present
+
+envdrift: 1 project drifted — 2 missing vars, 1 extra var, 1 secret-like
 ```
 
 Add `--ci` and that same drift exits `1`, failing the step:
